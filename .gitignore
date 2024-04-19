@@ -1,0 +1,4 @@
+# ignore the folder named "Data" ( git ignore file)
+# ignore the folder named "Data" and all its contents
+
+Data/
