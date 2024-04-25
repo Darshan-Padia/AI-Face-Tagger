@@ -43,13 +43,8 @@ def cluster_faces(image_folder, output_folder):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # image_paths = [os.path.join(image_folder, filename) for filename in os.listdir(image_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
-    image_paths = []
-    for folder in os.listdir(image_folder):
-        print(folder)
-        for filename in os.listdir(os.path.join(image_folder, folder)):
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-                image_paths.append(os.path.join(image_folder, folder, filename))
+    image_paths = [os.path.join(image_folder, filename) for filename in os.listdir(image_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
     all_face_encodings = []
     all_image_paths = []
     i=0
@@ -62,50 +57,30 @@ def cluster_faces(image_folder, output_folder):
         if face_encodings:
             all_face_encodings.extend(face_encodings)
             all_image_paths.extend([image_path] * len(face_encodings))
-
-    # Convert the list of face encodings to a NumPy array
+            
     X = np.array(all_face_encodings)
 
-    # Use DBSCAN to cluster faces
     dbscan = DBSCAN(eps=0.34, min_samples=1)
     labels = dbscan.fit_predict(X)
-    print()
-    print(len(np.unique(labels)))
-    # original_photo_dict = load_dict("faces_dict.txt")
+
     # Create folders for each cluster and copy images
-    for cluster_id in np.unique(labels):
-        cluster_folder = os.path.join(output_folder, f"photos_g{cluster_id}")
+    num_clusters = len(np.unique(labels))
+    print(f"Number of clusters: {num_clusters}")
+
+    for cluster_id in range(num_clusters):
+        cluster_folder = os.path.join(output_folder, f"cluster_{cluster_id}")
 
         # Create the cluster folder if it doesn't exist
         if not os.path.exists(cluster_folder):
             os.makedirs(cluster_folder)
 
         # Copy images corresponding to the cluster to the cluster folder
-        cluster_indices = np.where(labels == cluster_id)[0] 
+        cluster_indices = np.where(labels == cluster_id)[0]
         for index in cluster_indices:
             image_path = all_image_paths[index]
-            # print(image_path)
             filename = os.path.basename(image_path)
-            # if (cluster_flag < 2):
-            #     # copying the cropped face with name 'identify'
-            #     copyfile(image_path, os.path.join(cluster_folder, f"0identify{cluster_flag}.jpg"))
-
-            #     while not os.path.exists(os.path.join(cluster_folder, f"0identify{cluster_flag}.jpg")):
-            #         pass
-                
-        
             copyfile(image_path, os.path.join(cluster_folder, filename))
-            while not os.path.exists(os.path.join(cluster_folder, filename)):
-                pass
-            cluster_flag+=1
-
-            # copyfile(original_photo_dict[image_path], os.path.join(cluster_folder, filename))
-            # wait until file is copied
-            # while not os.path.exists(os.path.join(cluster_folder, filename)):
-            #     pass
-            # while not os.path.exists(os.path.join(cluster_folder, f"0identify{cluster_flag}.jpg")):
             print(f"Image {filename} copied to cluster folder {cluster_folder}")
-        cluster_flag = 0
 
 if __name__ == "__main__":
     input_folder = "all_face_photos"  # Change this to your input folder
