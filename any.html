@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            font-weight: bold;
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .result {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .result img {
+            max-width: 300px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div
+    style="
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        min-height: 200px;
+        min-width: 200px;
+        "
+    >
+        <!-- <img 
+        style="
+            min-width: 200px;
+            min-height: 200px;
+            border-radius: 50%;"
+        src="vraj_test_image.jpeg" alt=""> -->
+        <img src= "/templates/vraj_test_image.jpeg" width= "970" height="224"/>
+
+    </div>
+    <div class="container">
+        <h1>Image Upload</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="person1">Person 1 Image:</label>
+                <input type="file" id="person1" name="person1" required>
+            </div>
+            <div class="form-group">
+                <label for="person2">Person 2 Image (optional):</label>
+                <input type="file" id="person2" name="person2">
+            </div>
+            <button type="submit">Upload</button>
+        </form>
+        <div class="loading" style="display: none;">
+            <img src="loading.gif" alt="Loading...">
+        </div>
+        <div class="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const loadingDiv = document.querySelector('.loading');
+        const resultDiv = document.querySelector('.result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+
+            const formData = new FormData(form);
+            const response = await fetch('/get_matching_images', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            const images = data.images;
+
+            loadingDiv.style.display = 'none';
+
+            images.forEach(imagePath => {
+                const img = document.createElement('img');
+                img.src = imagePath;
+                resultDiv.appendChild(img);
+            });
+        });
+    </script>
+</body>
+</html>
+
