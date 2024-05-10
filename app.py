@@ -85,13 +85,15 @@ def index():
         # Process the person1 image
         person1_embedding = cosine_sim.make_pickle_files(person1_path)[0]
         output_folder = 'data_new/new_dbscann_jitter_1new_eps0.34_large_final_new'
-        person1_folder_path = cosine_sim.find_closest_match_majority(person1_path, output_folder, 0.9)
+        person1_folder_path = cosine_sim.find_closest_match_majority(person1_path, output_folder, 0.95)
         print(f'Person1 folder path: {person1_folder_path}')
+        if(not person1_folder_path):
+            return jsonify({'images': []})
         image_paths_person_1 = []
         # vraj_darshan.1.jpg , name will be like this we have to extract vraj_darshan
         for image in os.listdir(person1_folder_path):
             image_name = image.split('.')[0]
-            image_name += '.jpeg'
+            image_name += '.jpg'
             image_paths_person_1.append(os.path.join('data_new/train_dataset_new', image_name))
         images_with_person1 = list(set(image_paths_person_1))
         # images_with_person1 = [ os.path.join('data_new/train_dataset_new', image) for image in os.listdir(person1_folder_path) if image.endswith('.jpeg') or image.endswith('.jpg') or image.endswith('.png')]
@@ -119,7 +121,7 @@ def index():
                             embeddings = pickle.load(f)
                             embedding_data = embeddings[0]
                             if cosine_similarity(embedding_data, person2_embedding) > 0.95:
-                                images_with_both_persons.append(os.path.join(original_images_folder, embedding.split('.')[0] + '.jpeg'))
+                                images_with_both_persons.append(os.path.join(original_images_folder, embedding.split('.')[0] + '.jpg'))
 
             for image in os.listdir(person2_folder_path):
                 postfix = image.split('.')[0]
@@ -130,7 +132,7 @@ def index():
                             embeddings = pickle.load(f)
                             embedding_data = embeddings[0]
                             if cosine_similarity(embedding_data, person1_embedding) > 0.95:
-                                images_with_both_persons.append(os.path.join(original_images_folder, embedding.split('.')[0] + '.jpeg'))
+                                images_with_both_persons.append(os.path.join(original_images_folder, embedding.split('.')[0] + '.jpg'))
 
             print(images_with_both_persons)
             images_with_both_persons = list(set(images_with_both_persons))
@@ -141,7 +143,7 @@ def index():
             print(images_with_person1)
             return jsonify({'images': images_with_person1})
 
-    return render_template('index.html')
+    # return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)

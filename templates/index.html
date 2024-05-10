@@ -103,26 +103,31 @@
             const images = data.images;
 
             loadingDiv.style.display = 'none';
-            images.forEach(imagePath => {
-                const resultItem = document.createElement('div');
-                resultItem.classList.add('result-item');
 
-                const img = document.createElement('img');
-                img.src = '../' + imagePath;
+            if (images.length === 0) {
+                resultDiv.innerHTML = '<p>Images not found</p>';
+            } else {
+                images.forEach(imagePath => {
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('result-item');
 
-                const downloadButton = document.createElement('button');
-                downloadButton.textContent = 'Download';
-                downloadButton.addEventListener('click', () => {
-                    const link = document.createElement('a');
-                    link.href = img.src;
-                    link.download = imagePath.split('/').pop();
-                    link.click();
+                    const img = document.createElement('img');
+                    img.src = '../' + imagePath;
+
+                    const downloadButton = document.createElement('button');
+                    downloadButton.textContent = 'Download';
+                    downloadButton.addEventListener('click', () => {
+                        const link = document.createElement('a');
+                        link.href = img.src;
+                        link.download = imagePath.split('/').pop();
+                        link.click();
+                    });
+
+                    resultItem.appendChild(img);
+                    resultItem.appendChild(downloadButton);
+                    resultDiv.appendChild(resultItem);
                 });
-
-                resultItem.appendChild(img);
-                resultItem.appendChild(downloadButton);
-                resultDiv.appendChild(resultItem);
-            });
+            }
         });
     </script>
 </body>
