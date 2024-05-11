@@ -83,7 +83,15 @@ def index():
         person1_image.save(person1_path)
 
         # Process the person1 image
+        person1_embedding = cosine_sim.make_pickle_files(person1_path)
+        print("Person1 embedding")
+        print(len(person1_embedding))
+        if len(person1_embedding) > 1:
+            return jsonify({'images': [],'response': 'Please Enter a single face image'})
+        if len(person1_embedding) == 0:
+            return jsonify({'images': [],'response': 'No face detected in the image'})
         person1_embedding = cosine_sim.make_pickle_files(person1_path)[0]
+        
         output_folder = 'data_new/new_dbscann_jitter_1new_eps0.34_large_final_new'
         person1_folder_path = cosine_sim.find_closest_match_majority(person1_path, output_folder, 0.95)
         print(f'Person1 folder path: {person1_folder_path}')
